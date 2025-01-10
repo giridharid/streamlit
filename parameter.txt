@@ -1,0 +1,13 @@
+[API_KEYS]
+google_translate_api_key = YOUR_GOOGLE_TRANSLATE_API_KEY
+google_video_api_key = AIzaSyBptiSWHFsBVsfBpxuTemhBLf681ryjAMg
+namsor_api_key = 3d7c143160fed2927e7372ed6d7a6af2
+
+[FILE_PATHS]
+input_file_location = /Users/GiriDevanathan/Downloads/Personal/Bizdocs/OpenAi
+output_file_location = /Users/GiriDevanathan/Downloads/Personal/Bizdocs/OpenAi
+
+[Snowflake_connector]
+USER=GIRIACQUINK
+PASSWORD=Lbcd!234
+ACCOUNT=pycukeo-bt82959
