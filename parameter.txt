@@ -1,6 +1,0 @@
-[API_KEYS]
-
-[FILE_PATHS]
-
-[Snowflake_connector]
-
