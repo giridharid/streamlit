@@ -3,6 +3,4 @@
 [FILE_PATHS]
 
 [Snowflake_connector]
-USER=GIRIACQUINK
-PASSWORD=Lbcd!234
-ACCOUNT=pycukeo-bt82959
+
