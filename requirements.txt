@@ -4,3 +4,5 @@ snowflake-connector-python
 configparser
 matplotlib
 numpy
+plotly
+sqlalchemy
