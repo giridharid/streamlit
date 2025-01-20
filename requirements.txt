@@ -1,9 +1,8 @@
 streamlit
 pandas
 snowflake-connector-python
-configparser
 matplotlib
 numpy
-plotly
+transformers
 sqlalchemy
-authlib
+
