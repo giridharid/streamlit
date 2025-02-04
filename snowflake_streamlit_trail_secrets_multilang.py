@@ -93,18 +93,43 @@ if search_term:
                 st.write(f"**Summary:** {insights['PRODUCT_SUMMARY'].iloc[0]}")
                 st.divider()
 
-                # **Aspect-wise Scores**
+                # Display top emotions
+                st.subheader("Top Emotions")
+                top_emotions = [insights.iloc[0]["TOP_EMOTION_1"], insights.iloc[0]["TOP_EMOTION_2"], insights.iloc[0]["TOP_EMOTION_3"]]
+                top_emotions = [emotion for emotion in top_emotions if pd.notna(emotion)]
+
+                if top_emotions:
+                    st.write(", ".join(top_emotions))
+                else:
+                    st.write("No emotions available.")
+                st.divider()
+
+               # Display aspect scores dynamically
                 st.subheader("Aspect Scores")
                 aspect_columns = [col for col in insights.columns if col.endswith("_SCORE") and col != "GENERAL_SCORE"]
                 aspect_names = [col.replace("_SCORE", "").replace("_", " ").capitalize() for col in aspect_columns]
                 valid_scores = insights.iloc[0][aspect_columns].dropna()
 
                 if len(valid_scores) == len(aspect_names):
-                    aspect_scores = pd.DataFrame({"Aspect": aspect_names, "Score": valid_scores.values})
-                    st.dataframe(aspect_scores)
-                else:
-                    st.warning("Aspect scores are missing.")
+                    aspect_scores = pd.DataFrame({
+                        "Aspect": aspect_names,
+                        "Score": valid_scores.values
+                    })
 
+                    fig, ax = plt.subplots()
+                    bars = ax.bar(aspect_scores["Aspect"], aspect_scores["Score"], color=plt.cm.viridis(np.linspace(0, 1, len(aspect_scores))))
+                    ax.set_xlabel('Aspect')
+                    ax.set_ylabel('Score')
+                    ax.set_title('Aspect Scores')
+
+                    for bar in bars:
+                        yval = round(bar.get_height())
+                        ax.text(bar.get_x() + bar.get_width() / 2, yval + 0.1, yval, ha='center', va='bottom')
+
+                    plt.xticks(rotation=45, ha='right')
+                    st.pyplot(fig)
+                else:
+                    st.warning("Mismatch between aspect names and aspect scores.")
                 st.divider()
 
                 # **Aspect Selection**
