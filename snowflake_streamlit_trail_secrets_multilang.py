@@ -42,6 +42,11 @@ def highlight_full_sentence(text, sentiment, sentiment_type):
     sentiment_color = "#90EE90" if sentiment_type == 'positive' else "#8B0000"
     text_color = "black" if sentiment_type == 'positive' else "white"
 
+    # Ensure the sentiment text exists in the review text
+    if sentiment.lower() not in text.lower():
+        return text  
+
+    # Identify and highlight the full sentence containing sentiment
     sentences = re.split(r'(?<=[.!?])\s+', text)
     for i, sentence in enumerate(sentences):
         if sentiment.lower() in sentence.lower():
@@ -86,6 +91,20 @@ if search_term:
                 st.subheader("Product Insights")
                 st.write(f"**Overall Score:** {round(insights['OVERALL_SCORE'].iloc[0])}")
                 st.write(f"**Summary:** {insights['PRODUCT_SUMMARY'].iloc[0]}")
+                st.divider()
+
+                # **Aspect-wise Scores**
+                st.subheader("Aspect Scores")
+                aspect_columns = [col for col in insights.columns if col.endswith("_SCORE") and col != "GENERAL_SCORE"]
+                aspect_names = [col.replace("_SCORE", "").replace("_", " ").capitalize() for col in aspect_columns]
+                valid_scores = insights.iloc[0][aspect_columns].dropna()
+
+                if len(valid_scores) == len(aspect_names):
+                    aspect_scores = pd.DataFrame({"Aspect": aspect_names, "Score": valid_scores.values})
+                    st.dataframe(aspect_scores)
+                else:
+                    st.warning("Aspect scores are missing.")
+
                 st.divider()
 
                 # **Aspect Selection**
