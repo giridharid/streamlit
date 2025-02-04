@@ -16,18 +16,28 @@ def create_snowflake_connection():
         schema=st.secrets["snowflake"]["schema"]
     )
 
-# Load data from Snowflake
+# Load data from Snowflake with encoding fixes
 def load_table_data(query):
     conn = create_snowflake_connection()
     try:
-        return pd.read_sql(query, conn)
+        df = pd.read_sql(query, conn)
+        
+        # Ensure proper UTF-8 decoding to prevent junk characters
+        for col in df.select_dtypes(include=['object']).columns:
+            df[col] = df[col].astype(str).apply(lambda x: x.encode('latin1').decode('utf-8', 'ignore') if x else x)
+        
+        return df
     finally:
         conn.close()
 
-# Function to highlight the full sentence containing sentiment text
+# Function to highlight the entire sentence containing sentiment text
 def highlight_full_sentence(text, sentiment, sentiment_type):
     if not isinstance(text, str) or not isinstance(sentiment, str):
         return text  # Return original if values are invalid
+
+    # Fix encoding before highlighting
+    text = text.encode('latin1').decode('utf-8', 'ignore')
+    sentiment = sentiment.encode('latin1').decode('utf-8', 'ignore')
 
     sentiment_color = "#90EE90" if sentiment_type == 'positive' else "#8B0000"
     text_color = "black" if sentiment_type == 'positive' else "white"
@@ -39,7 +49,7 @@ def highlight_full_sentence(text, sentiment, sentiment_type):
             sentences[i] = highlighted_sentence
             return " ".join(sentences)
 
-    return text  # If sentiment is not found, return original text
+    return text  
 
 # **UI starts here**
 st.title("Hotel Insights Dashboard")
@@ -78,57 +88,15 @@ if search_term:
                 st.write(f"**Summary:** {insights['PRODUCT_SUMMARY'].iloc[0]}")
                 st.divider()
 
-                # **Display top emotions**
-                st.subheader("Top Emotions")
-                top_emotions = [insights.iloc[0]["TOP_EMOTION_1"], insights.iloc[0]["TOP_EMOTION_2"], insights.iloc[0]["TOP_EMOTION_3"]]
-                top_emotions = [emotion for emotion in top_emotions if pd.notna(emotion)]
-
-                if top_emotions:
-                    st.write(", ".join(top_emotions))
-                else:
-                    st.write("No emotions available.")
-                st.divider()
-
-                # **Display aspect scores dynamically**
-                st.subheader("Aspect Scores")
-                aspect_columns = [col for col in insights.columns if col.endswith("_SCORE") and col != "GENERAL_SCORE"]
-                aspect_names = [col.replace("_SCORE", "").replace("_", " ").capitalize() for col in aspect_columns]
-                valid_scores = insights.iloc[0][aspect_columns].dropna()
-
-                if len(valid_scores) == len(aspect_names):
-                    aspect_scores = pd.DataFrame({
-                        "Aspect": aspect_names,
-                        "Score": valid_scores.values
-                    })
-
-                    fig, ax = plt.subplots()
-                    bars = ax.bar(aspect_scores["Aspect"], aspect_scores["Score"], color=plt.cm.viridis(np.linspace(0, 1, len(aspect_scores))))
-                    ax.set_xlabel('Aspect')
-                    ax.set_ylabel('Score')
-                    ax.set_title('Aspect Scores')
-
-                    for bar in bars:
-                        yval = round(bar.get_height())
-                        ax.text(bar.get_x() + bar.get_width() / 2, yval + 0.1, yval, ha='center', va='bottom')
-
-                    plt.xticks(rotation=45, ha='right')
-                    st.pyplot(fig)
-                else:
-                    st.warning("Mismatch between aspect names and aspect scores.")
-                st.divider()
-
                 # **Aspect Selection**
                 aspects = load_table_data("SELECT DISTINCT ASPECT_NAME FROM ASPECT_LIST WHERE ASPECT_NAME != 'General'")
                 selected_aspect = st.selectbox("Select an Aspect:", aspects["ASPECT_NAME"].tolist())
 
                 if selected_aspect:
-                    # **Tabs for Language Selection**
-                    tab1, tab2, tab3 = st.tabs(["English", "Hindi", "Tamil"])
-
                     # **Load Multi-Language Reviews**
                     reviews = load_table_data(f"""
                         SELECT SENTIMENT_TYPE, SENTIMENT_TEXT, SENTIMENT_TEXT_HI, SENTIMENT_TEXT_TA,
-                               REVIEW_TEXT, REVIEW_TEXT_HI, REVIEW_TEXT_TA
+                               REVIEW_TEXT, REVIEW_TEXT_HI, REVIEW_TEXT_TA, CONFIDENCE_SCORE
                         FROM PRODUCT_MULTI_LANG_REVIEW_SNIPPET
                         WHERE PRODUCT_ID = {selected_product_id}
                         AND ASPECT_NAME = '{selected_aspect}'
@@ -137,7 +105,14 @@ if search_term:
                     """)
 
                     if not reviews.empty:
-                        # **Pagination**
+                        # **Show # of Positive and Negative Mentions**
+                        positive_count = reviews[reviews['SENTIMENT_TYPE'] == 'positive'].shape[0]
+                        negative_count = reviews[reviews['SENTIMENT_TYPE'] == 'negative'].shape[0]
+
+                        st.markdown(f"<div style='padding: 10px; background-color: lightgreen; color: black;'>**Positive Mentions:** {positive_count}</div>", unsafe_allow_html=True)
+                        st.markdown(f"<div style='padding: 10px; background-color: darkred; color: white;'>**Negative Mentions:** {negative_count}</div>", unsafe_allow_html=True)
+
+                        # **Pagination Settings**
                         reviews_per_page = st.selectbox("Reviews per page:", options=[10, 25, 50], index=1)
                         total_reviews = len(reviews)
                         max_page = int(np.ceil(total_reviews / reviews_per_page))
@@ -147,12 +122,16 @@ if search_term:
                         end_idx = start_idx + reviews_per_page
                         reviews_batch = reviews.iloc[start_idx:end_idx]
 
+                        # **Tabs for Language Selection**
+                        tab1, tab2, tab3 = st.tabs(["English", "Hindi", "Tamil"])
+
                         # **English Reviews**
                         with tab1:
                             st.subheader(f"Reviews in English ({selected_aspect})")
                             for _, review in reviews_batch.iterrows():
                                 highlighted_text = highlight_full_sentence(review['REVIEW_TEXT'], review['SENTIMENT_TEXT'], review['SENTIMENT_TYPE'])
                                 st.markdown(f"<div style='padding:10px;'>{highlighted_text}</div>", unsafe_allow_html=True)
+                                st.markdown("<hr>", unsafe_allow_html=True)
 
                         # **Hindi Reviews**
                         with tab2:
@@ -160,6 +139,7 @@ if search_term:
                             for _, review in reviews_batch.iterrows():
                                 highlighted_text = highlight_full_sentence(review['REVIEW_TEXT_HI'], review['SENTIMENT_TEXT_HI'], review['SENTIMENT_TYPE'])
                                 st.markdown(f"<div style='padding:10px;'>{highlighted_text}</div>", unsafe_allow_html=True)
+                                st.markdown("<hr>", unsafe_allow_html=True)
 
                         # **Tamil Reviews**
                         with tab3:
@@ -167,3 +147,4 @@ if search_term:
                             for _, review in reviews_batch.iterrows():
                                 highlighted_text = highlight_full_sentence(review['REVIEW_TEXT_TA'], review['SENTIMENT_TEXT_TA'], review['SENTIMENT_TYPE'])
                                 st.markdown(f"<div style='padding:10px;'>{highlighted_text}</div>", unsafe_allow_html=True)
+                                st.markdown("<hr>", unsafe_allow_html=True)
