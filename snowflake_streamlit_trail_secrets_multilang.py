@@ -22,9 +22,9 @@ def load_table_data(query):
     try:
         df = pd.read_sql(query, conn)
         
-        # Ensure proper UTF-8 decoding to prevent junk characters
+        # Ensure proper UTF-8 decoding while ignoring invalid characters
         for col in df.select_dtypes(include=['object']).columns:
-            df[col] = df[col].astype(str).apply(lambda x: x.encode('latin1').decode('utf-8', 'ignore') if x else x)
+            df[col] = df[col].astype(str).apply(lambda x: x.encode('utf-8', 'ignore').decode('utf-8', 'ignore') if x else x)
         
         return df
     finally:
@@ -36,8 +36,8 @@ def highlight_full_sentence(text, sentiment, sentiment_type):
         return text  # Return original if values are invalid
 
     # Fix encoding before highlighting
-    text = text.encode('latin1').decode('utf-8', 'ignore')
-    sentiment = sentiment.encode('latin1').decode('utf-8', 'ignore')
+    text = text.encode('utf-8', 'ignore').decode('utf-8', 'ignore')
+    sentiment = sentiment.encode('utf-8', 'ignore').decode('utf-8', 'ignore')
 
     sentiment_color = "#90EE90" if sentiment_type == 'positive' else "#8B0000"
     text_color = "black" if sentiment_type == 'positive' else "white"
@@ -111,6 +111,7 @@ if search_term:
 
                         st.markdown(f"<div style='padding: 10px; background-color: lightgreen; color: black;'>**Positive Mentions:** {positive_count}</div>", unsafe_allow_html=True)
                         st.markdown(f"<div style='padding: 10px; background-color: darkred; color: white;'>**Negative Mentions:** {negative_count}</div>", unsafe_allow_html=True)
+                        st.divider()
 
                         # **Pagination Settings**
                         reviews_per_page = st.selectbox("Reviews per page:", options=[10, 25, 50], index=1)
@@ -122,6 +123,8 @@ if search_term:
                         end_idx = start_idx + reviews_per_page
                         reviews_batch = reviews.iloc[start_idx:end_idx]
 
+                        st.divider()
+
                         # **Tabs for Language Selection**
                         tab1, tab2, tab3 = st.tabs(["English", "Hindi", "Tamil"])
 
@@ -131,7 +134,7 @@ if search_term:
                             for _, review in reviews_batch.iterrows():
                                 highlighted_text = highlight_full_sentence(review['REVIEW_TEXT'], review['SENTIMENT_TEXT'], review['SENTIMENT_TYPE'])
                                 st.markdown(f"<div style='padding:10px;'>{highlighted_text}</div>", unsafe_allow_html=True)
-                                st.markdown("<hr>", unsafe_allow_html=True)
+                                st.divider()  # Horizontal divider between reviews
 
                         # **Hindi Reviews**
                         with tab2:
@@ -139,7 +142,7 @@ if search_term:
                             for _, review in reviews_batch.iterrows():
                                 highlighted_text = highlight_full_sentence(review['REVIEW_TEXT_HI'], review['SENTIMENT_TEXT_HI'], review['SENTIMENT_TYPE'])
                                 st.markdown(f"<div style='padding:10px;'>{highlighted_text}</div>", unsafe_allow_html=True)
-                                st.markdown("<hr>", unsafe_allow_html=True)
+                                st.divider()  # Horizontal divider between reviews
 
                         # **Tamil Reviews**
                         with tab3:
@@ -147,4 +150,4 @@ if search_term:
                             for _, review in reviews_batch.iterrows():
                                 highlighted_text = highlight_full_sentence(review['REVIEW_TEXT_TA'], review['SENTIMENT_TEXT_TA'], review['SENTIMENT_TYPE'])
                                 st.markdown(f"<div style='padding:10px;'>{highlighted_text}</div>", unsafe_allow_html=True)
-                                st.markdown("<hr>", unsafe_allow_html=True)
+                                st.divider()  # Horizontal divider between reviews
