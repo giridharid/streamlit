@@ -171,50 +171,50 @@ if search_term:
                                 st.write("No negative phrases found.")
                     st.divider()
 
-                     if selected_aspect:
+                 if selected_aspect:
                     # **Load Multi-Language Reviews**
-                        reviews = load_table_data(f"""
-                            SELECT ROW_NUMBER() OVER (ORDER BY CONFIDENCE_SCORE, START_INDEX DESC) AS ROW_NUM, 
-                                   SENTIMENT_TYPE, SENTIMENT_TEXT, SENTIMENT_TEXT_HI, SENTIMENT_TEXT_TA, SENTIMENT_TEXT_TE, SENTIMENT_TEXT_KN, SENTIMENT_TEXT_ES, SENTIMENT_TEXT_FR, SENTIMENT_TEXT_IW,
-                                   REVIEW_TEXT, REVIEW_TEXT_HI, REVIEW_TEXT_TA, REVIEW_TEXT_TE, REVIEW_TEXT_KN, REVIEW_TEXT_ES, REVIEW_TEXT_FR, REVIEW_TEXT_IW,
-                                   CONFIDENCE_SCORE
-                            FROM PRODUCT_MULTI_LANG_REVIEW_SNIPPET
-                            WHERE PRODUCT_ID = {selected_product_id}
-                            AND ASPECT_NAME = '{selected_aspect}'
-                            AND CONFIDENCE_SCORE > 0.8
-                            ORDER BY CONFIDENCE_SCORE, START_INDEX DESC
-                        """)
-            
-                        if not reviews.empty:
-                            positive_count = reviews[reviews['SENTIMENT_TYPE'] == 'positive'].shape[0]
-                            negative_count = reviews[reviews['SENTIMENT_TYPE'] == 'negative'].shape[0]
-            
-                            st.markdown(f"<div style='padding: 10px; background-color: lightgreen; color: black;'>**Positive Mentions:** {positive_count}</div>", unsafe_allow_html=True)
-                            st.markdown(f"<div style='padding: 10px; background-color: darkred; color: white;'>**Negative Mentions:** {negative_count}</div>", unsafe_allow_html=True)
-                            st.divider()
-            
-                            reviews_per_page = st.selectbox("Reviews per page:", options=[10, 25, 40], index=1)
-                            total_reviews = len(reviews)
-                            max_page = int(np.ceil(total_reviews / reviews_per_page))
-                            page = st.number_input("Select Page:", min_value=1, max_value=max_page, step=1)
-            
-                            start_idx = (page - 1) * reviews_per_page
-                            end_idx = start_idx + reviews_per_page
-                            reviews_batch = reviews.iloc[start_idx:end_idx]
-            
-                            st.divider()
-            
-                            tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8 = st.tabs(["English", "Hindi", "Tamil", "Telugu", "Kannada", "Spanish", "French", "Hebrew"])
-            
-                            for tab, lang, review_col, sentiment_col in zip(
-                                    [tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8],
-                                    ["English", "Hindi", "Tamil", "Telugu", "Kannada", "Spanish", "French", "Hebrew"],
-                                    ["REVIEW_TEXT", "REVIEW_TEXT_HI", "REVIEW_TEXT_TA", "REVIEW_TEXT_TE", "REVIEW_TEXT_KN", "REVIEW_TEXT_ES", "REVIEW_TEXT_FR", "REVIEW_TEXT_IW"],
-                                    ["SENTIMENT_TEXT", "SENTIMENT_TEXT_HI", "SENTIMENT_TEXT_TA", "SENTIMENT_TEXT_TE", "SENTIMENT_TEXT_KN", "SENTIMENT_TEXT_ES", "SENTIMENT_TEXT_FR", "SENTIMENT_TEXT_IW"]):
-            
-                                with tab:
-                                    st.subheader(f"Reviews in {lang} ({selected_aspect})")
-                                    for _, review in reviews_batch.iterrows():
-                                        highlighted_text = highlight_full_sentence(review[review_col], review[sentiment_col], review['SENTIMENT_TYPE'])
-                                        st.markdown(f"<div style='padding:10px;'><b>{review['ROW_NUM']}. </b>{highlighted_text}</div>", unsafe_allow_html=True)
-                                        st.divider()
+                    reviews = load_table_data(f"""
+                        SELECT ROW_NUMBER() OVER (ORDER BY CONFIDENCE_SCORE, START_INDEX DESC) AS ROW_NUM, 
+                               SENTIMENT_TYPE, SENTIMENT_TEXT, SENTIMENT_TEXT_HI, SENTIMENT_TEXT_TA, SENTIMENT_TEXT_TE, SENTIMENT_TEXT_KN, SENTIMENT_TEXT_ES, SENTIMENT_TEXT_FR, SENTIMENT_TEXT_IW,
+                               REVIEW_TEXT, REVIEW_TEXT_HI, REVIEW_TEXT_TA, REVIEW_TEXT_TE, REVIEW_TEXT_KN, REVIEW_TEXT_ES, REVIEW_TEXT_FR, REVIEW_TEXT_IW,
+                               CONFIDENCE_SCORE
+                        FROM PRODUCT_MULTI_LANG_REVIEW_SNIPPET
+                        WHERE PRODUCT_ID = {selected_product_id}
+                        AND ASPECT_NAME = '{selected_aspect}'
+                        AND CONFIDENCE_SCORE > 0.8
+                        ORDER BY CONFIDENCE_SCORE, START_INDEX DESC
+                    """)
+        
+                    if not reviews.empty:
+                        positive_count = reviews[reviews['SENTIMENT_TYPE'] == 'positive'].shape[0]
+                        negative_count = reviews[reviews['SENTIMENT_TYPE'] == 'negative'].shape[0]
+        
+                        st.markdown(f"<div style='padding: 10px; background-color: lightgreen; color: black;'>**Positive Mentions:** {positive_count}</div>", unsafe_allow_html=True)
+                        st.markdown(f"<div style='padding: 10px; background-color: darkred; color: white;'>**Negative Mentions:** {negative_count}</div>", unsafe_allow_html=True)
+                        st.divider()
+        
+                        reviews_per_page = st.selectbox("Reviews per page:", options=[10, 25, 40], index=1)
+                        total_reviews = len(reviews)
+                        max_page = int(np.ceil(total_reviews / reviews_per_page))
+                        page = st.number_input("Select Page:", min_value=1, max_value=max_page, step=1)
+        
+                        start_idx = (page - 1) * reviews_per_page
+                        end_idx = start_idx + reviews_per_page
+                        reviews_batch = reviews.iloc[start_idx:end_idx]
+        
+                        st.divider()
+        
+                        tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8 = st.tabs(["English", "Hindi", "Tamil", "Telugu", "Kannada", "Spanish", "French", "Hebrew"])
+        
+                        for tab, lang, review_col, sentiment_col in zip(
+                                [tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8],
+                                ["English", "Hindi", "Tamil", "Telugu", "Kannada", "Spanish", "French", "Hebrew"],
+                                ["REVIEW_TEXT", "REVIEW_TEXT_HI", "REVIEW_TEXT_TA", "REVIEW_TEXT_TE", "REVIEW_TEXT_KN", "REVIEW_TEXT_ES", "REVIEW_TEXT_FR", "REVIEW_TEXT_IW"],
+                                ["SENTIMENT_TEXT", "SENTIMENT_TEXT_HI", "SENTIMENT_TEXT_TA", "SENTIMENT_TEXT_TE", "SENTIMENT_TEXT_KN", "SENTIMENT_TEXT_ES", "SENTIMENT_TEXT_FR", "SENTIMENT_TEXT_IW"]):
+        
+                            with tab:
+                                st.subheader(f"Reviews in {lang} ({selected_aspect})")
+                                for _, review in reviews_batch.iterrows():
+                                    highlighted_text = highlight_full_sentence(review[review_col], review[sentiment_col], review['SENTIMENT_TYPE'])
+                                    st.markdown(f"<div style='padding:10px;'><b>{review['ROW_NUM']}. </b>{highlighted_text}</div>", unsafe_allow_html=True)
+                                    st.divider()
