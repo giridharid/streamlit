@@ -171,7 +171,7 @@ if search_term:
                                 st.write("No negative phrases found.")
                     st.divider()
 
-                 if selected_aspect:
+                if selected_aspect:
                     # **Load Multi-Language Reviews**
                     reviews = load_table_data(f"""
                         SELECT ROW_NUMBER() OVER (ORDER BY CONFIDENCE_SCORE, START_INDEX DESC) AS ROW_NUM, 
