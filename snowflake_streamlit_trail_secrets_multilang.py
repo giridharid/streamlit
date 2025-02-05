@@ -135,6 +135,44 @@ if search_term:
                 # **Aspect Selection**
                 aspects = load_table_data("SELECT DISTINCT ASPECT_NAME FROM ASPECT_LIST WHERE ASPECT_NAME != 'General'")
                 selected_aspect = st.selectbox("Select an Aspect:", aspects["ASPECT_NAME"].tolist())
+                
+                if selected_aspect:
+                    # Display top phrases
+                    top_phrases = load_table_data(f"""
+                        SELECT POSITIVE_PHRASES, NEGATIVE_PHRASES
+                        FROM PRODUCT_ASPECT_TOP_PHRASE
+                        WHERE PRODUCT_ID = {selected_product_id} AND ASPECT = '{selected_aspect}'
+                    """)
+
+                    if not top_phrases.empty:
+                        st.subheader("Top Phrases")
+                        positive_phrases = top_phrases['POSITIVE_PHRASES'].iloc[0]
+                        negative_phrases = top_phrases['NEGATIVE_PHRASES'].iloc[0]
+
+                        col1, col2 = st.columns([1, 1])
+
+                        # Display positive phrases
+                        if positive_phrases:
+                            positive_phrases = positive_phrases.split(",")
+                            with col1:
+                                st.write("**Positive Phrases**")
+                                for phrase in positive_phrases:
+                                    st.markdown(f"<div style='background-color:#d4edda;padding:10px;'><b>{phrase.strip()}</b></div>", unsafe_allow_html=True)
+                        else:
+                            with col1:
+                                st.write("No positive phrases found.")
+
+                        # Display negative phrases
+                        if negative_phrases:
+                            negative_phrases = negative_phrases.split(",")
+                            with col2:
+                                st.write("**Negative Phrases**")
+                                for phrase in negative_phrases:
+                                    st.markdown(f"<div style='background-color:#f8d7da;padding:10px;'><b>{phrase.strip()}</b></div>", unsafe_allow_html=True)
+                        else:
+                            with col2:
+                                st.write("No negative phrases found.")
+                    st.divider()
 
                 if selected_aspect:
                     # **Load Multi-Language Reviews**
