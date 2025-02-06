@@ -35,7 +35,7 @@ query_quarterly = "SELECT * FROM REDDIT.PUBLIC.QUARTERLY_TRENDS ORDER BY QUARTER
 df_quarterly = load_table_data(query_quarterly)
 
 # Adjust figure size for better spacing
-fig, ax = plt.subplots(figsize=(18, 10))  # Increased width and height
+fig, ax = plt.subplots(figsize=(14, 7), dpi=100)  # Adjusted width, height, and DPI
 width = 0.45  # Adjusted bar width
 x = np.arange(len(df_quarterly["QUARTER"]))
 
@@ -71,7 +71,7 @@ query_reasons = "SELECT * FROM REDDIT.PUBLIC.REASON_FOR_SWITCHING ORDER BY ANDRO
 df_reasons = load_table_data(query_reasons)
 
 # Adjust figure size for better spacing
-fig, ax = plt.subplots(figsize=(18, 10))  # Increased height
+fig, ax = plt.subplots(figsize=(12, 6), dpi=100)  # Adjusted width, height, and DPI
 bar_width = 0.45
 x = np.arange(len(df_reasons["REASON"]))
 
