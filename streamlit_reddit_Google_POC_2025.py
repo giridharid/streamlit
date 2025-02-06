@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # Title
-st.markdown("📊 Reddit Analysis: iOS ↔ Android Switching Trends")
+st.header("📊 Reddit Analysis: iOS ↔ Android Switching Trends")
 
 # Snowflake connection function
 def create_snowflake_connection():
@@ -34,29 +34,33 @@ st.markdown("### 📅 Quarterly Trends in Platform Switching")
 query_quarterly = "SELECT * FROM REDDIT.PUBLIC.QUARTERLY_TRENDS ORDER BY QUARTER"
 df_quarterly = load_table_data(query_quarterly)
 
-# Plot
-fig, ax = plt.subplots(figsize=(8, 4))
-width = 0.4  # Bar width
+# Adjust figure size for better spacing
+fig, ax = plt.subplots(figsize=(12, 6))  # Increased width and height
+width = 0.35  # Adjusted bar width
 x = np.arange(len(df_quarterly["QUARTER"]))
 
 bars1 = ax.bar(x - width/2, df_quarterly["ANDROID_TO_IOS"], width, label="Android to iOS", color="blue", alpha=0.7)
 bars2 = ax.bar(x + width/2, df_quarterly["IOS_TO_ANDROID"], width, label="iOS to Android", color="red", alpha=0.7)
 
 ax.set_xticks(x)
-ax.set_xticklabels(df_quarterly["QUARTER"])
+ax.set_xticklabels(df_quarterly["QUARTER"], rotation=30, ha="right")  # Rotated for better readability
 ax.set_xlabel("Quarter", fontsize=12)
 ax.set_ylabel("Users", fontsize=12)
-ax.set_title("Quarterly Switching Trends", fontsize=14)
+#ax.set_title("Quarterly Switching Trends", fontsize=14)
 ax.legend()
 
-# Label values on bars
+# Label values on bars with better spacing
 for bar in bars1 + bars2:
     height = bar.get_height()
     if height > 0:
-        ax.annotate(f"{int(height)}", xy=(bar.get_x() + bar.get_width() / 2, height),
-                    xytext=(0, 3), textcoords="offset points", ha='center', fontsize=10)
+        ax.annotate(f"{int(height)}", 
+                    xy=(bar.get_x() + bar.get_width() / 2, height),
+                    xytext=(0, 5), textcoords="offset points", 
+                    ha='center', fontsize=10)
 
 st.pyplot(fig)
+st.divider()
+
 st.divider()
 
 ### 2️⃣ Reasons for Switching
@@ -66,8 +70,8 @@ st.markdown("### 🔄 Reasons for Switching")
 query_reasons = "SELECT * FROM REDDIT.PUBLIC.REASON_FOR_SWITCHING ORDER BY ANDROID_TO_IOS + IOS_TO_ANDROID DESC"
 df_reasons = load_table_data(query_reasons)
 
-# Bar Chart
-fig, ax = plt.subplots(figsize=(8, 4))
+# Adjust figure size for better spacing
+fig, ax = plt.subplots(figsize=(10, 6))  # Increased height
 bar_width = 0.4
 x = np.arange(len(df_reasons["REASON"]))
 
@@ -75,18 +79,20 @@ bars1 = ax.barh(x - bar_width/2, df_reasons["ANDROID_TO_IOS"], height=bar_width,
 bars2 = ax.barh(x + bar_width/2, df_reasons["IOS_TO_ANDROID"], height=bar_width, label="iOS to Android", color="red", alpha=0.7)
 
 ax.set_yticks(x)
-ax.set_yticklabels(df_reasons["REASON"])
+ax.set_yticklabels(df_reasons["REASON"], fontsize=11)
 ax.set_xlabel("Users", fontsize=12)
-ax.set_title("Top Reasons for Switching", fontsize=14)
+#ax.set_title("Top Reasons for Switching", fontsize=14)
 ax.legend()
 
-# Label values on bars
+# Label values on bars with better spacing
 for bars in [bars1, bars2]:
     for bar in bars:
         width = bar.get_width()
         if width > 0:
-            ax.annotate(f"{int(width)}", xy=(width, bar.get_y() + bar.get_height() / 2),
-                        xytext=(5, 0), textcoords="offset points", va='center', fontsize=10)
+            ax.annotate(f"{int(width)}", 
+                        xy=(width, bar.get_y() + bar.get_height() / 2),
+                        xytext=(5, 0), textcoords="offset points", 
+                        va='center', fontsize=10)
 
 st.pyplot(fig)
 st.divider()
@@ -105,7 +111,7 @@ bars2 = ax.bar(df_sentiment["SWITCH_TYPE"], df_sentiment["NEGATIVE"], bottom=df_
 
 ax.set_xlabel("Switch Type", fontsize=12)
 ax.set_ylabel("Sentiment Count", fontsize=12)
-ax.set_title("Sentiment Analysis", fontsize=14)
+#ax.set_title("Sentiment Analysis", fontsize=14)
 ax.legend()
 
 # Label values on bars
@@ -126,7 +132,6 @@ st.pyplot(fig)
 st.divider()
 
 ### 4️⃣ Overall Summary
-st.header("📜 Overall Summary")
 
 # Load data
 query_summary = "SELECT * FROM REDDIT.PUBLIC.SUMMARY"
