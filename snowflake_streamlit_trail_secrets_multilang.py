@@ -30,30 +30,53 @@ def load_table_data(query):
     finally:
         conn.close()
 
-# Function to highlight the entire sentence containing sentiment text
-def highlight_full_sentence(text, sentiment, sentiment_type):
+def highlight_full_sentence(text, sentiment, sentiment_type, lang):
+    """
+    Highlights the full sentence containing the sentiment for English, Spanish, and French.
+    For other languages, highlights only the sentiment word/phrase.
+
+    Parameters:
+        text (str): The review text.
+        sentiment (str): The sentiment phrase to be highlighted.
+        sentiment_type (str): The sentiment type (positive/negative).
+        lang (str): The language of the review.
+
+    Returns:
+        str: The modified text with highlighted sentiment.
+    """
+
+    # Validate input types
     if not isinstance(text, str) or not isinstance(sentiment, str):
         return text  
 
-    # Fix encoding before highlighting
+    # Fix encoding issues before processing
     text = text.encode('utf-8', 'ignore').decode('utf-8', 'ignore')
     sentiment = sentiment.encode('utf-8', 'ignore').decode('utf-8', 'ignore')
 
+    # Define highlight colors based on sentiment type
     sentiment_color = "#90EE90" if sentiment_type == 'positive' else "#8B0000"
     text_color = "black" if sentiment_type == 'positive' else "white"
 
+    # If sentiment is not present in text, return original text
     if sentiment.lower() not in text.lower():
         return text  
 
-    sentences = re.split(r'(?<=[.!?])\s+', text)
-    for i, sentence in enumerate(sentences):
-        if sentiment.lower() in sentence.lower():
-            highlighted_sentence = f"<span style='background-color:{sentiment_color}; color:{text_color}; font-weight:bold;'>{sentence}</span>"
-            sentences[i] = highlighted_sentence
-            return " ".join(sentences)
+    # Apply full sentence highlighting only for English, Spanish, and French
+    if lang.lower() in ["english", "spanish", "french"]:
+        sentences = re.split(r'(?<=[.!?])\s+', text)  # Split text into sentences
+        for i, sentence in enumerate(sentences):
+            if sentiment.lower() in sentence.lower():
+                highlighted_sentence = f"<span style='background-color:{sentiment_color}; color:{text_color}; font-weight:bold;'>{sentence}</span>"
+                sentences[i] = highlighted_sentence
+                return " ".join(sentences)  # Return modified text with highlighted sentence
 
-    return text  
-
+    # For other languages, highlight only the sentiment word/phrase
+    highlighted_text = text.replace(
+        sentiment,
+        f"<span style='background-color:{sentiment_color}; color:{text_color}; font-weight:bold;'>{sentiment}</span>"
+    )
+    return highlighted_text
+    
 # **UI starts here**
 st.title("Hotel Insights Dashboard")
 
@@ -212,9 +235,10 @@ if search_term:
                                 ["REVIEW_TEXT", "REVIEW_TEXT_HI", "REVIEW_TEXT_TA", "REVIEW_TEXT_TE", "REVIEW_TEXT_KN", "REVIEW_TEXT_ES", "REVIEW_TEXT_FR", "REVIEW_TEXT_IW"],
                                 ["SENTIMENT_TEXT", "SENTIMENT_TEXT_HI", "SENTIMENT_TEXT_TA", "SENTIMENT_TEXT_TE", "SENTIMENT_TEXT_KN", "SENTIMENT_TEXT_ES", "SENTIMENT_TEXT_FR", "SENTIMENT_TEXT_IW"]):
         
-                            with tab:
-                                st.subheader(f"Reviews in {lang} ({selected_aspect})")
-                                for _, review in reviews_batch.iterrows():
-                                    highlighted_text = highlight_full_sentence(review[review_col], review[sentiment_col], review['SENTIMENT_TYPE'])
-                                    st.markdown(f"<div style='padding:10px;'><b>{review['ROW_NUM']}. </b>{highlighted_text}</div>", unsafe_allow_html=True)
-                                    st.divider()
+                        # Streamlit UI Integration
+                        with tab:
+                            st.subheader(f"Reviews in {lang} ({selected_aspect})")
+                            for _, review in reviews_batch.iterrows():
+                                highlighted_text = highlight_full_sentence(review[review_col], review[sentiment_col], review['SENTIMENT_TYPE'], lang)
+                                st.markdown(f"<div style='padding:10px;'><b>{review['ROW_NUM']}. </b>{highlighted_text}</div>", unsafe_allow_html=True)
+                                st.divider()
