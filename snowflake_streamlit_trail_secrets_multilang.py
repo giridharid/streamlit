@@ -197,7 +197,7 @@ if search_term:
                 if selected_aspect:
                     # **Load Multi-Language Reviews**
                     reviews = load_table_data(f"""
-                        SELECT ROW_NUMBER() OVER (ORDER BY CONFIDENCE_SCORE, START_INDEX DESC) AS ROW_NUM, 
+                        SELECT ROW_NUMBER() OVER (ORDER BY CONFIDENCE_SCORE DESC, START_INDEX ASC) AS ROW_NUM, 
                                SENTIMENT_TYPE, SENTIMENT_TEXT, SENTIMENT_TEXT_HI, SENTIMENT_TEXT_TA, SENTIMENT_TEXT_TE, SENTIMENT_TEXT_KN, SENTIMENT_TEXT_ES, SENTIMENT_TEXT_FR, SENTIMENT_TEXT_IW,
                                REVIEW_TEXT, REVIEW_TEXT_HI, REVIEW_TEXT_TA, REVIEW_TEXT_TE, REVIEW_TEXT_KN, REVIEW_TEXT_ES, REVIEW_TEXT_FR, REVIEW_TEXT_IW,
                                CONFIDENCE_SCORE
