@@ -29,6 +29,7 @@ def load_table_data(query):
 
 ### 1️⃣ Quarterly Trends
 st.markdown("### 📅 Quarterly Trends in Platform Switching")
+st.divider()
 
 # Load data
 query_quarterly = "SELECT * FROM REDDIT.PUBLIC.QUARTERLY_TRENDS ORDER BY QUARTER"
@@ -61,28 +62,30 @@ for bar in bars1 + bars2:
 st.pyplot(fig)
 st.divider()
 
-st.divider()
 
 ### 2️⃣ Reasons for Switching
 st.markdown("### 🔄 Reasons for Switching")
+st.divider()
 
 # Load data
 query_reasons = "SELECT * FROM REDDIT.PUBLIC.REASON_FOR_SWITCHING ORDER BY ANDROID_TO_IOS + IOS_TO_ANDROID DESC"
 df_reasons = load_table_data(query_reasons)
 
-# Adjust figure size for better spacing
-fig, ax = plt.subplots(figsize=(12, 6), dpi=100)  # Adjusted width, height, and DPI
-bar_width = 0.45
+# Dynamically adjust figure height based on number of rows
+fig_height = max(6, len(df_reasons) * 0.4)  # Scales height dynamically
+fig, ax = plt.subplots(figsize=(12, fig_height), dpi=100)  # Increased height
+
+bar_width = 0.4
 x = np.arange(len(df_reasons["REASON"]))
 
 bars1 = ax.barh(x - bar_width/2, df_reasons["ANDROID_TO_IOS"], height=bar_width, label="Android to iOS", color="blue", alpha=0.7)
 bars2 = ax.barh(x + bar_width/2, df_reasons["IOS_TO_ANDROID"], height=bar_width, label="iOS to Android", color="red", alpha=0.7)
 
 ax.set_yticks(x)
-ax.set_yticklabels(df_reasons["REASON"], fontsize=11)
+ax.set_yticklabels(df_reasons["REASON"], fontsize=12)  # Increased font size
 ax.set_xlabel("Users", fontsize=12)
-#ax.set_title("Top Reasons for Switching", fontsize=14)
-ax.legend()
+ax.set_title("Top Reasons for Switching", fontsize=14)
+ax.legend(loc="upper right", fontsize=12)  # Adjusted legend position
 
 # Label values on bars with better spacing
 for bars in [bars1, bars2]:
@@ -95,10 +98,12 @@ for bars in [bars1, bars2]:
                         va='center', fontsize=10)
 
 st.pyplot(fig)
+
 st.divider()
 
 ### 3️⃣ Sentiment Analysis
 st.markdown("### 📊 Sentiment Analysis of Switching Users")
+st.divider()
 
 # Load data
 query_sentiment = "SELECT * FROM REDDIT.PUBLIC.SENTIMENT_ANALYSIS"
@@ -112,7 +117,7 @@ bars2 = ax.bar(df_sentiment["SWITCH_TYPE"], df_sentiment["NEGATIVE"], bottom=df_
 
 ax.set_xlabel("Switch Type", fontsize=12)
 ax.set_ylabel("Sentiment Count", fontsize=12)
-ax.set_title("Sentiment Analysis", fontsize=14)
+#ax.set_title("Sentiment Analysis", fontsize=14)
 
 # Adjust legend inside the bar area
 ax.legend(loc="center left", bbox_to_anchor=(1, 0.5), fontsize=12, title="Sentiment")
@@ -132,6 +137,8 @@ st.pyplot(fig)
 st.divider()
 
 ### 4️⃣ Overall Summary
+st.divider()
+
 
 # Load data
 query_summary = "SELECT * FROM REDDIT.PUBLIC.SUMMARY"
@@ -157,6 +164,7 @@ summary_table += "</table>"
 # Display table using Markdown with HTML
 st.markdown(summary_table, unsafe_allow_html=True)
 
+st.divider()
 
 # End
 st.success("✅ Analysis Completed!")
