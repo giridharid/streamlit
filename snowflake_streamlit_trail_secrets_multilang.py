@@ -205,7 +205,7 @@ if search_term:
                         WHERE PRODUCT_ID = {selected_product_id}
                         AND ASPECT_NAME = '{selected_aspect}'
                         AND CONFIDENCE_SCORE > 0.8
-                        ORDER BY CONFIDENCE_SCORE, START_INDEX DESC
+                        ORDER BY CONFIDENCE_SCORE desc, START_INDEX asc
                     """)
         
                     if not reviews.empty:
