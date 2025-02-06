@@ -35,8 +35,8 @@ query_quarterly = "SELECT * FROM REDDIT.PUBLIC.QUARTERLY_TRENDS ORDER BY QUARTER
 df_quarterly = load_table_data(query_quarterly)
 
 # Adjust figure size for better spacing
-fig, ax = plt.subplots(figsize=(16, 8))  # Increased width and height
-width = 0.35  # Adjusted bar width
+fig, ax = plt.subplots(figsize=(18, 10))  # Increased width and height
+width = 0.45  # Adjusted bar width
 x = np.arange(len(df_quarterly["QUARTER"]))
 
 bars1 = ax.bar(x - width/2, df_quarterly["ANDROID_TO_IOS"], width, label="Android to iOS", color="blue", alpha=0.7)
@@ -71,8 +71,8 @@ query_reasons = "SELECT * FROM REDDIT.PUBLIC.REASON_FOR_SWITCHING ORDER BY ANDRO
 df_reasons = load_table_data(query_reasons)
 
 # Adjust figure size for better spacing
-fig, ax = plt.subplots(figsize=(16, 8))  # Increased height
-bar_width = 0.4
+fig, ax = plt.subplots(figsize=(18, 10))  # Increased height
+bar_width = 0.45
 x = np.arange(len(df_reasons["REASON"]))
 
 bars1 = ax.barh(x - bar_width/2, df_reasons["ANDROID_TO_IOS"], height=bar_width, label="Android to iOS", color="blue", alpha=0.7)
