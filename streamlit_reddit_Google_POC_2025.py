@@ -35,7 +35,7 @@ query_quarterly = "SELECT * FROM REDDIT.PUBLIC.QUARTERLY_TRENDS ORDER BY QUARTER
 df_quarterly = load_table_data(query_quarterly)
 
 # Adjust figure size for better spacing
-fig, ax = plt.subplots(figsize=(16, 8)  # Increased width and height
+fig, ax = plt.subplots(figsize=(16, 8))  # Increased width and height
 width = 0.35  # Adjusted bar width
 x = np.arange(len(df_quarterly["QUARTER"]))
 
