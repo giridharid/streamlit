@@ -104,15 +104,18 @@ st.markdown("### 📊 Sentiment Analysis of Switching Users")
 query_sentiment = "SELECT * FROM REDDIT.PUBLIC.SENTIMENT_ANALYSIS"
 df_sentiment = load_table_data(query_sentiment)
 
-# Stacked Bar Chart
-fig, ax = plt.subplots(figsize=(6, 4))
+# Adjust figure size & spacing
+fig, ax = plt.subplots(figsize=(8, 5), dpi=100)
+
 bars1 = ax.bar(df_sentiment["SWITCH_TYPE"], df_sentiment["POSITIVE"], label="Positive", color="green", alpha=0.7)
 bars2 = ax.bar(df_sentiment["SWITCH_TYPE"], df_sentiment["NEGATIVE"], bottom=df_sentiment["POSITIVE"], label="Negative", color="red", alpha=0.7)
 
 ax.set_xlabel("Switch Type", fontsize=12)
 ax.set_ylabel("Sentiment Count", fontsize=12)
-#ax.set_title("Sentiment Analysis", fontsize=14)
-ax.legend()
+ax.set_title("Sentiment Analysis", fontsize=14)
+
+# Adjust legend inside the bar area
+ax.legend(loc="center left", bbox_to_anchor=(1, 0.5), fontsize=12, title="Sentiment")
 
 # Label values on bars
 for bars in [bars1, bars2]:
@@ -120,15 +123,12 @@ for bars in [bars1, bars2]:
         height = bar.get_height()
         y_offset = bar.get_y() if bars is bars2 else 0
         if height > 0:
-            ax.annotate(f"{int(height)}", xy=(bar.get_x() + bar.get_width() / 2, height + y_offset),
-                        xytext=(0, 3), textcoords="offset points", ha='center', fontsize=10)
+            ax.annotate(f"{int(height)}", 
+                        xy=(bar.get_x() + bar.get_width() / 2, height + y_offset),
+                        xytext=(0, 3), textcoords="offset points", 
+                        ha='center', fontsize=10)
 
 st.pyplot(fig)
-
-
-
-
-# Divider
 st.divider()
 
 ### 4️⃣ Overall Summary
