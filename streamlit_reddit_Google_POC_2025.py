@@ -135,6 +135,9 @@ df_summary = load_table_data(query_summary)
 # Display summary with word wrapping
 st.markdown("#### 📜 Overall Summary")
 
+# Move "Overall" row to the bottom
+df_summary_sorted = pd.concat([df_summary[df_summary["SUMMARY_TITLE"] != "Overall"], df_summary[df_summary["SUMMARY_TITLE"] == "Overall"]])
+
 # Convert DataFrame to Markdown-friendly format
 summary_table = "<table style='width:100%; border-collapse: collapse;'>"
 summary_table += "<tr><th style='border: 1px solid black; padding: 8px; text-align: left;'>Title</th>" \
