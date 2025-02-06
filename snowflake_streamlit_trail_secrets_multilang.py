@@ -235,10 +235,10 @@ if search_term:
                                 ["REVIEW_TEXT", "REVIEW_TEXT_HI", "REVIEW_TEXT_TA", "REVIEW_TEXT_TE", "REVIEW_TEXT_KN", "REVIEW_TEXT_ES", "REVIEW_TEXT_FR", "REVIEW_TEXT_IW"],
                                 ["SENTIMENT_TEXT", "SENTIMENT_TEXT_HI", "SENTIMENT_TEXT_TA", "SENTIMENT_TEXT_TE", "SENTIMENT_TEXT_KN", "SENTIMENT_TEXT_ES", "SENTIMENT_TEXT_FR", "SENTIMENT_TEXT_IW"]):
         
-                        # Streamlit UI Integration
-                        with tab:
-                            st.subheader(f"Reviews in {lang} ({selected_aspect})")
-                            for _, review in reviews_batch.iterrows():
-                                highlighted_text = highlight_full_sentence(review[review_col], review[sentiment_col], review['SENTIMENT_TYPE'], lang)
-                                st.markdown(f"<div style='padding:10px;'><b>{review['ROW_NUM']}. </b>{highlighted_text}</div>", unsafe_allow_html=True)
-                                st.divider()
+                            # Streamlit UI Integration
+                            with tab:
+                                st.subheader(f"Reviews in {lang} ({selected_aspect})")
+                                for _, review in reviews_batch.iterrows():
+                                    highlighted_text = highlight_full_sentence(review[review_col], review[sentiment_col], review['SENTIMENT_TYPE'], lang)
+                                    st.markdown(f"<div style='padding:10px;'><b>{review['ROW_NUM']}. </b>{highlighted_text}</div>", unsafe_allow_html=True)
+                                    st.divider()
