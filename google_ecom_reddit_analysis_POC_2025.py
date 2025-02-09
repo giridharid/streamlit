@@ -290,9 +290,12 @@ with tab[1]:
 
     # Customize the chart
     ax.set_xticks(x)
-    ax.set_xticklabels(range(1, len(columns_to_plot) + 1))  # Replace labels with numbers
+    #ax.set_xticklabels(range(1, len(columns_to_plot) + 1))  # Replace labels with numbers
+    ax.set_xticklabels(columns_to_plot, rotation=30, ha="right", fontsize=10)  # Use reasons as labels
     ax.set_ylabel("Count", fontsize=12)
     #ax.set_title("Comparison of Switching Reasons", fontsize=14)
+    ax.legend(title="Switch Direction", loc="upper right")  # Legend for directions
+
     ax.legend()
 
     # Annotate bars with their values
