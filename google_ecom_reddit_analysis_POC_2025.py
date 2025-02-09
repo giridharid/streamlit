@@ -6,7 +6,7 @@ import numpy as np
 
 # Title
 st.title("📊 Data Analysis: Reddit and Ecom")
-@st.cache_data
+#@st.cache_data
 
 # Snowflake connection function
 def create_snowflake_connection():
