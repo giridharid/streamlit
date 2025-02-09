@@ -245,25 +245,70 @@ with tab[1]:
     st.pyplot(fig)
     st.divider()
 
-    ### 5️⃣ Switching Reasons
+  # Ecom Tab
+with tab[1]:
+    st.header("📊 Ecom Analysis: Switching Trends and Insights")
+
+    ### 🔍 Reasons for Switching
     st.markdown("### 🔍 Reasons for Switching")
     st.divider()
 
+    # Load the switch reasons data
     query_reasons = "SELECT * FROM ECOM.PUBLIC.SWITCH_REASON"
-    df_reasons = load_table_data(query_reasons)
+    df_switch_reason = pd.DataFrame({
+        "switch_direction": ["Android to iOS", "iOS to Android"],
+        "Affordability": [101, 124],
+        "Apps": [25, 36],
+        "Battery": [160, 193],
+        "Camera": [158, 222],
+        "Design or Experience": [119, 111],
+        "Display": [119, 147],
+        "Features": [44, 46],
+        "Performance": [134, 175],
+        "Other": [56, 82]  # Ignored later
+    })
 
+    # Define columns to include in the comparison (ignoring 'Other')
+    columns_to_plot = [
+        "Affordability", "Apps", "Battery", "Camera",
+        "Design or Experience", "Display", "Features", "Performance"
+    ]
+
+    # Extract data for each switch direction
+    x = np.arange(len(columns_to_plot))  # Positions for the bars
+    width = 0.35  # Width of the bars
+
+    android_to_ios = df_switch_reason.loc[df_switch_reason["switch_direction"] == "Android to iOS", columns_to_plot].iloc[0]
+    ios_to_android = df_switch_reason.loc[df_switch_reason["switch_direction"] == "iOS to Android", columns_to_plot].iloc[0]
+
+    # Set up the plot
     fig, ax = plt.subplots(figsize=(12, 6), dpi=100)
-    x = np.arange(len(df_reasons["SWITCH_DIRECTION"]))
 
-    ax.bar(x, df_reasons["AFFORDABILITY"], label="Affordability", color="blue", alpha=0.7)
-    ax.bar(x, df_reasons["PERFORMANCE"], label="Performance", color="orange", alpha=0.7)
+    # Create grouped bars
+    bars_android_to_ios = ax.bar(x - width/2, android_to_ios, width, label="Android to iOS", color="blue", alpha=0.7)
+    bars_ios_to_android = ax.bar(x + width/2, ios_to_android, width, label="iOS to Android", color="red", alpha=0.7)
 
+    # Customize the chart
     ax.set_xticks(x)
-    ax.set_xticklabels(df_reasons["SWITCH_DIRECTION"])
-    ax.set_xlabel("Switch Direction", fontsize=12)
+    ax.set_xticklabels(range(1, len(columns_to_plot) + 1))  # Replace labels with numbers
+    ax.set_ylabel("Count", fontsize=12)
+    ax.set_title("Comparison of Switching Reasons", fontsize=14)
     ax.legend()
+
+    # Annotate bars with their values
+    for bars in [bars_android_to_ios, bars_ios_to_android]:
+        for bar in bars:
+            height = bar.get_height()
+            if height > 0:
+                ax.annotate(f"{int(height)}", 
+                            xy=(bar.get_x() + bar.get_width() / 2, height), 
+                            xytext=(0, 3), textcoords="offset points", 
+                            ha='center', fontsize=9)
+
+    # Display the plot in Streamlit
     st.pyplot(fig)
     st.divider()
+
 
     ### 6️⃣ Overall Summary
     st.markdown("### 📜 Overall Summary")
