@@ -296,7 +296,7 @@ with tab[1]:
     #ax.set_title("Comparison of Switching Reasons", fontsize=14)
     ax.legend(title="Switch Direction", loc="upper right")  # Legend for directions
 
-    ax.legend()
+    #ax.legend()
 
     # Annotate bars with their values
     for bars in [bars_android_to_ios, bars_ios_to_android]:
