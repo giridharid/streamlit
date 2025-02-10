@@ -33,8 +33,8 @@ tab = st.tabs(["Reddit", "eCom"])
 # Reddit Tab
 with tab[0]:
     st.divider()
-    st.header("📊 Reddit Analysis: iOS ↔ Android Switching Trends")
-
+    st.markdown("📊 Reddit Analysis: iOS ↔ Android Switching Trends")
+    st.divider()
     ### 1️⃣ Quarterly Trends
     st.markdown("### 📅 Quarterly Trends in Platform Switching")
     st.divider()
@@ -169,7 +169,7 @@ with tab[0]:
 with tab[1]:
     st.divider()
 
-    st.header("📊 Ecom Analysis: Switching Trends and Insights")
+    st.markdown("📊 Ecom Analysis: Switching Trends and Insights")
     st.divider()
     
     ### 1️⃣ Switch Source Count
