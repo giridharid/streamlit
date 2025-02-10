@@ -165,11 +165,11 @@ with tab[0]:
     # End
     st.success("✅ Analysis Completed!")
 
-# Ecom Tab
+# eCom Tab
 with tab[1]:
     st.divider()
 
-    st.markdown("📊 Ecom Analysis: Switching Trends and Insights")
+    st.markdown("📊 eCom Analysis: Switching Trends and Insights")
     st.divider()
     
     ### 1️⃣ Switch Source Count
@@ -334,4 +334,4 @@ with tab[1]:
     summary_table += "</table>"
     st.markdown(summary_table, unsafe_allow_html=True)
 
-    st.success("✅ Ecom Analysis Completed!")
+    st.success("✅ eCom Analysis Completed!")
