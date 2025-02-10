@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # Title
-st.title("📊 Data Analysis: Reddit and Ecom")
+st.title("📊 Data Analysis: Reddit and eCom")
 
 # Snowflake connection function
 def create_snowflake_connection():
@@ -28,10 +28,11 @@ def load_table_data(query):
         conn.close()
 
 # Tab selection
-tab = st.tabs(["Reddit", "Ecom"])
+tab = st.tabs(["Reddit", "eCom"])
 
 # Reddit Tab
 with tab[0]:
+    st.divider()
     st.header("📊 Reddit Analysis: iOS ↔ Android Switching Trends")
 
     ### 1️⃣ Quarterly Trends
@@ -166,8 +167,11 @@ with tab[0]:
 
 # Ecom Tab
 with tab[1]:
-    st.header("📊 Ecom Analysis: Switching Trends and Insights")
+    st.divider()
 
+    st.header("📊 Ecom Analysis: Switching Trends and Insights")
+    st.divider()
+    
     ### 1️⃣ Switch Source Count
     st.markdown("### 🔄 Switch Source Count (Amazon vs Flipkart)")
     st.divider()
