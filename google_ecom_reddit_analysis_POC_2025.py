@@ -246,8 +246,8 @@ with tab[1]:
     st.divider()
 
   # Ecom Tab
-with tab[1]:
-    st.header("📊 Ecom Analysis: Switching Trends and Insights")
+#with tab[1]:
+#    st.header("📊 Ecom Analysis: Switching Trends and Insights")
 
     ### 🔍 Reasons for Switching
     st.markdown("### 🔍 Reasons for Switching")
