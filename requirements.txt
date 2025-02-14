@@ -1,3 +1,4 @@
+pip==25.0.1
 streamlit
 pandas
 snowflake-connector-python
