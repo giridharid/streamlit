@@ -199,8 +199,18 @@ if query:
             st.write("**Ratings:**")
             for aspect, score in aspect_scores.items():
                 if score:
-                    emoji = "✅" if score >= 80 else "👍" if score >= 70 else "⚠️"
-                    st.write(f"  - {aspect}: {score:.1f} {emoji}")
+                    # Determine the rating based on the score
+                    if score >= 80:
+                        rating = "Excellent"
+                        emoji = "✅"
+                    elif score >= 70:
+                        rating = "Good"
+                        emoji = "👍"
+                    else:
+                        rating = "Average"
+                        emoji = "⚠️"
+                    # Display the aspect with the rating and emoji
+                    st.write(f"  - {aspect}: {rating} {emoji}")
 
             # Product summary
             st.write(f"**Product Summary:** {source.get('summary', 'No summary available')}")
