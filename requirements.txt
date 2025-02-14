@@ -9,3 +9,4 @@ elasticsearch
 requests
 beautifulsoup4
 wordcloud
+streamlit_wordcloud
