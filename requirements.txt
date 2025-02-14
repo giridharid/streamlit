@@ -8,3 +8,8 @@ sqlalchemy
 elasticsearch
 requests
 beautifulsoup4
+streamlit==1.22.0
+pandas==1.5.3
+snowflake-connector-python==3.0.0
+wordcloud==1.8.2.2
+matplotlib==3.7.1
