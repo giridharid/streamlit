@@ -1,8 +1,7 @@
 import streamlit as st
 import pandas as pd
 import snowflake.connector
-from wordcloud import WordCloud
-import matplotlib.pyplot as plt
+import streamlit_wordcloud as wordcloud
 import streamlit.components.v1 as components
 
 # Snowflake Connection
@@ -34,15 +33,24 @@ def fetch_video_snippets(video_id):
 
 # Render YouTube Videos
 def render_video(video_url):
-    components.iframe(video_url, height=315)
+    if "youtube.com" in video_url or "youtu.be" in video_url:
+        components.iframe(video_url.replace("watch?v=", "embed/"), height=315)
+    else:
+        st.error("Invalid YouTube URL")
 
-# Create a word cloud from transcription text
-def generate_wordcloud(text):
-    wordcloud = WordCloud(width=800, height=400, background_color='white', colormap='viridis').generate(text)
-    plt.figure(figsize=(10, 5))
-    plt.imshow(wordcloud, interpolation='bilinear')
-    plt.axis('off')
-    st.pyplot(plt)
+# Create a word cloud from filtered keywords
+def generate_wordcloud(filtered_keywords):
+    if filtered_keywords:
+        wordcloud_streamlit = wordcloud.visualize(
+            data=dict(pd.Series(filtered_keywords).value_counts()),
+            max_words=100,
+            height=400,
+            width=800,
+            background_color="white"
+        )
+        st.markdown(wordcloud_streamlit, unsafe_allow_html=True)
+    else:
+        st.warning("No relevant keywords to display in the word cloud.")
 
 # Filter keywords based on predefined categories
 def filter_keywords(text, categories):
@@ -106,10 +114,7 @@ if selected_video:
 
         st.subheader("Word Cloud")
         st.markdown("Visualize the most frequently occurring keywords in the video transcription.")
-        if filtered_keywords:
-            generate_wordcloud(" ".join(filtered_keywords))
-        else:
-            st.warning("No relevant keywords found for smartphones.")
+        generate_wordcloud(filtered_keywords)
 
         st.subheader("Snippet Keywords")
         st.markdown("Click on a keyword to view and play the corresponding video snippet.")
@@ -122,10 +127,14 @@ if selected_video:
         for idx, word in enumerate(unique_words):
             col = cols[idx % 3]
             if col.button(word):
-                snippet = snippets_df[snippets_df['TRANSCRIPTION_TEXT'].str.contains(word, na=False)].iloc[0]
-                st.write(f"Playing snippet containing '{word}':")
-                st.write(f"**Start Time**: {snippet['START_TIME']} seconds, **End Time**: {snippet['END_TIME']} seconds")
-                snippet_video_url = f"{video_details['VIDEO_URL']}?start={int(snippet['START_TIME'])}&end={int(snippet['END_TIME'])}"
-                render_video(snippet_video_url)
+                snippet_rows = snippets_df[snippets_df['TRANSCRIPTION_TEXT'].str.contains(word, na=False)]
+                if not snippet_rows.empty:
+                    snippet = snippet_rows.iloc[0]
+                    st.write(f"Playing snippet containing '{word}':")
+                    st.write(f"**Start Time**: {snippet['START_TIME']} seconds, **End Time**: {snippet['END_TIME']} seconds")
+                    snippet_video_url = f"{video_details['VIDEO_URL']}?start={int(snippet['START_TIME'])}&end={int(snippet['END_TIME'])}"
+                    render_video(snippet_video_url)
+                else:
+                    st.warning(f"No snippet found containing the keyword '{word}'.")
     else:
         st.warning("No snippets available for this video.")
