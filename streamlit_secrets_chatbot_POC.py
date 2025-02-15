@@ -1,7 +1,7 @@
 import streamlit as st
 from elasticsearch import Elasticsearch
 import requests
-from bs4 import BeautifulSoup
+#from bs4 import BeautifulSoup
 import random
 
 import re
