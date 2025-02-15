@@ -7,4 +7,5 @@ transformers
 sqlalchemy
 elasticsearch
 requests
-
+beautifulsoup4
+streamlit_wordcloud
