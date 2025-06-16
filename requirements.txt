@@ -7,4 +7,5 @@ transformers
 sqlalchemy
 elasticsearch
 requests
+snowflake-sqlalchemy==1.5.1
 
