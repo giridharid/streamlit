@@ -4,7 +4,7 @@ import snowflake.connector
 import numpy as np
 import re
 import matplotlib.pyplot as plt
-
+'''
 # Snowflake connection function
 def create_snowflake_connection():
     return snowflake.connector.connect(
@@ -29,6 +29,35 @@ def load_table_data(query):
         return df
     finally:
         conn.close()
+'''
+from sqlalchemy import create_engine
+
+# SQLAlchemy-compatible Snowflake connection
+def create_snowflake_engine():
+    user = st.secrets["snowflake"]["user"]
+    password = st.secrets["snowflake"]["password"]
+    account = st.secrets["snowflake"]["account"]
+    warehouse = st.secrets["snowflake"]["warehouse"]
+    database = st.secrets["snowflake"]["database"]
+    schema = st.secrets["snowflake"]["schema"]
+    role = st.secrets["snowflake"]["role"]
+
+    return create_engine(
+        f'snowflake://{user}:{password}@{account}/{database}/{schema}?warehouse={warehouse}&role={role}'
+    )
+
+# Load data using SQLAlchemy engine
+def load_table_data(query):
+    engine = create_snowflake_engine()
+    df = pd.read_sql(query, engine)
+
+    # Fix encoding issues
+    for col in df.select_dtypes(include=['object']).columns:
+        df[col] = df[col].astype(str).apply(
+            lambda x: x.encode('utf-8', 'ignore').decode('utf-8', 'ignore') if x else x
+        )
+
+    return df
 
 def highlight_full_sentence(text, sentiment, sentiment_type, lang):
     """
