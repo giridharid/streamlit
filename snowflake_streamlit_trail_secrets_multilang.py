@@ -18,7 +18,7 @@ def create_snowflake_engine():
     schema = st.secrets["snowflake"]["schema"]
 
     return create_engine(
-        f'snowflake://{user}:{password}@{account}/{database}/{schema}?warehouse={warehouse}&role={role}'
+        f'snowflake://{user}:{password}@{account}/{database}/{schema}?warehouse={warehouse}'
     )
 
 # Load data using SQLAlchemy engine
