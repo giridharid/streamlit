@@ -24,17 +24,21 @@ def create_snowflake_engine():
 # Load data using SQLAlchemy engine
 def load_table_data(query):
     engine = create_snowflake_engine()
-    #with engine.connect() as connection:
-    with engine.raw_connection() as conn: 
-        df = pd.read_sql(query, conn)
+    connection = engine.raw_connection()  # DBAPI-level connection
 
-    # Fix encoding issues
+    try:
+        df = pd.read_sql(query, con=connection)
+    finally:
+        connection.close()  # ensure proper cleanup
+
+    # Clean encoding issues
     for col in df.select_dtypes(include=['object']).columns:
         df[col] = df[col].astype(str).apply(
             lambda x: x.encode('utf-8', 'ignore').decode('utf-8', 'ignore') if x else x
         )
 
     return df
+
 
 
 def highlight_full_sentence(text, sentiment, sentiment_type, lang):
