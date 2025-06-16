@@ -1,15 +1,15 @@
 import streamlit as st
 import pandas as pd
-import snowflake.connector
+from sqlalchemy import create_engine
+import urllib
 import numpy as np
 import re
 import matplotlib.pyplot as plt
-from sqlalchemy import create_engine
-import urllib
-
+'''
+# Snowflake connection function
 def create_snowflake_engine():
     user = st.secrets["snowflake"]["user"]
-    password = urllib.parse.quote_plus(st.secrets["snowflake"]["password"])  # escape special chars
+    password = urllib.parse.quote_plus(st.secrets["snowflake"]["password"])
     account = st.secrets["snowflake"]["account"]
     warehouse = st.secrets["snowflake"]["warehouse"]
     database = st.secrets["snowflake"]["database"]
@@ -22,9 +22,39 @@ def create_snowflake_engine():
 
 def load_table_data(query):
     engine = create_snowflake_engine()
+    try:
+        df = pd.read_sql(query, engine)
+        
+        # Fix encoding issues (UTF-8 decoding to prevent junk characters)
+        for col in df.select_dtypes(include=['object']).columns:
+            df[col] = df[col].astype(str).apply(lambda x: x.encode('utf-8', 'ignore').decode('utf-8', 'ignore') if x else x)
+        
+        return df
+    finally:
+        conn.close()
+'''
+from sqlalchemy import create_engine
+
+# SQLAlchemy-compatible Snowflake connection
+def create_snowflake_engine():
+    user = st.secrets["snowflake"]["user"]
+    password = st.secrets["snowflake"]["password"]
+    account = st.secrets["snowflake"]["account"]
+    warehouse = st.secrets["snowflake"]["warehouse"]
+    database = st.secrets["snowflake"]["database"]
+    schema = st.secrets["snowflake"]["schema"]
+    role = st.secrets["snowflake"]["role"]
+
+    return create_engine(
+        f'snowflake://{user}:{password}@{account}/{database}/{schema}?warehouse={warehouse}&role={role}'
+    )
+
+# Load data using SQLAlchemy engine
+def load_table_data(query):
+    engine = create_snowflake_engine()
     df = pd.read_sql(query, engine)
 
-    # Encoding cleanup (optional)
+    # Fix encoding issues
     for col in df.select_dtypes(include=['object']).columns:
         df[col] = df[col].astype(str).apply(
             lambda x: x.encode('utf-8', 'ignore').decode('utf-8', 'ignore') if x else x
