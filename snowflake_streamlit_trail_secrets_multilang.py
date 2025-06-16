@@ -126,7 +126,7 @@ if search_term:
                 FROM PRODUCT_INSIGHT
                 WHERE PRODUCT_ID = {selected_product_id}
             """)
-
+            st.write("INSIGHTS DF:", insights)
             if not insights.empty:
                 st.subheader("Product Insights")
                 st.write(f"**Overall Score:** {round(insights['OVERALL_SCORE'].iloc[0])}")
@@ -176,6 +176,7 @@ if search_term:
                 aspects = load_table_data("SELECT DISTINCT ASPECT_NAME FROM ASPECT_LIST WHERE ASPECT_NAME != 'General'")
                 selected_aspect = st.selectbox("Select an Aspect:", aspects["ASPECT_NAME"].tolist())
                 
+
                 if selected_aspect:
                     # Display top phrases
                     top_phrases = load_table_data(f"""
