@@ -16,7 +16,6 @@ def create_snowflake_engine():
     warehouse = st.secrets["snowflake"]["warehouse"]
     database = st.secrets["snowflake"]["database"]
     schema = st.secrets["snowflake"]["schema"]
-    role = st.secrets["snowflake"]["role"]
 
     return create_engine(
         f'snowflake://{user}:{password}@{account}/{database}/{schema}?warehouse={warehouse}&role={role}'
