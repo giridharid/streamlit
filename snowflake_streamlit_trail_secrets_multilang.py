@@ -24,13 +24,7 @@ def create_snowflake_engine():
 # Load data using SQLAlchemy engine
 def load_table_data(query):
     engine = create_snowflake_engine()
-    connection = engine.connect()
-
-    try:
-        # Use execution_options to ensure Snowflake SQLAlchemy compatibility with pandas
-        df = pd.read_sql(query, con=connection.execution_options(stream_results=True))
-    finally:
-        connection.close()
+    df = pd.read_sql(query, engine)
 
     # Clean up any encoding issues
     for col in df.select_dtypes(include=['object']).columns:
