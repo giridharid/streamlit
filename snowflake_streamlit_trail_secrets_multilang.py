@@ -22,11 +22,26 @@ def create_snowflake_engine():
     )
 
 # Load data using SQLAlchemy engine
-def load_table_data(query):
-    engine = create_snowflake_engine()
-    df = pd.read_sql(query, engine)
+import snowflake.connector
 
-    # Clean up any encoding issues
+def load_table_data(query):
+    conn = snowflake.connector.connect(
+        user=st.secrets["snowflake"]["user"],
+        password=st.secrets["snowflake"]["password"],
+        account=st.secrets["snowflake"]["account"],
+        warehouse=st.secrets["snowflake"]["warehouse"],
+        database=st.secrets["snowflake"]["database"],
+        schema=st.secrets["snowflake"]["schema"]
+    )
+
+    try:
+        cursor = conn.cursor()
+        cursor.execute(query)
+        df = cursor.fetch_pandas_all()  # ✅ optimized native fetch
+    finally:
+        conn.close()
+
+    # Clean encoding
     for col in df.select_dtypes(include=['object']).columns:
         df[col] = df[col].astype(str).apply(
             lambda x: x.encode('utf-8', 'ignore').decode('utf-8', 'ignore') if x else x
