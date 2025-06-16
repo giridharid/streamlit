@@ -24,8 +24,9 @@ def create_snowflake_engine():
 # Load data using SQLAlchemy engine
 def load_table_data(query):
     engine = create_snowflake_engine()
-    with engine.connect() as connection:
-        df = pd.read_sql(query, connection)
+    #with engine.connect() as connection:
+    with engine.raw_connection() as conn: 
+        df = pd.read_sql(query, conn)
 
     # Fix encoding issues
     for col in df.select_dtypes(include=['object']).columns:
