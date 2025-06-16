@@ -24,7 +24,8 @@ def create_snowflake_engine():
 # Load data using SQLAlchemy engine
 def load_table_data(query):
     engine = create_snowflake_engine()
-    df = pd.read_sql(query, engine)
+    with engine.connect() as connection:
+        df = pd.read_sql(query, connection)
 
     # Fix encoding issues
     for col in df.select_dtypes(include=['object']).columns:
@@ -33,6 +34,7 @@ def load_table_data(query):
         )
 
     return df
+
 
 def highlight_full_sentence(text, sentiment, sentiment_type, lang):
     """
