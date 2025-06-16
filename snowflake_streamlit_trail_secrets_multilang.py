@@ -126,7 +126,7 @@ if search_term:
                 FROM PRODUCT_INSIGHT
                 WHERE PRODUCT_ID = {selected_product_id}
             """)
-            st.write("INSIGHTS DF:", insights)
+            #st.write("INSIGHTS DF:", insights)
             if not insights.empty:
                 st.subheader("Product Insights")
                 st.write(f"**Overall Score:** {round(insights['OVERALL_SCORE'].iloc[0])}")
